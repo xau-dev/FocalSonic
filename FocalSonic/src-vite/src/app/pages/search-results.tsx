@@ -2,7 +2,8 @@ import { service } from "@/service/service";
 import { queryKeys } from "@/utils/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { t } from "i18next";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { GridFallback } from "../components/fallbacks/album-fallbacks";
 import PreviewList from "../components/home/preview-list";
 
 interface SearchResultsProps {
@@ -71,14 +72,7 @@ export default function SearchResults({ query, latestSearchId, isLiveSearch, onS
     const showError = isError && lastResults !== null;
 
     return (
-        <div className="p-4">
-            {query && (
-                <h2 className="text-lg font-semibold mb-4">Search results for "{query}"</h2>
-            )}
-
-            {isLoading && isLiveSearch && shouldShowResults && (
-                <div className="text-muted-foreground text-sm">Searching...</div>
-            )}
+        <div>
 
             {showError && (
                 <div className="text-destructive text-sm mb-2">
@@ -86,13 +80,15 @@ export default function SearchResults({ query, latestSearchId, isLiveSearch, onS
                 </div>
             )}
 
-            {shouldShowResults && hasAnyResults && displayData && (
+            {isLoading && (<GridFallback />)}
+
+            {shouldShowResults && hasAnyResults && displayData && !isLoading && (
                 <>
-                    <PreviewList title={t("sidebar.top")} list={displayData?.top} showMore={false} />
-                    <PreviewList title={t("sidebar.songs")} list={displayData?.song} showMore={false} />
-                    <PreviewList title={t("sidebar.albums")} list={displayData?.album} showMore={false} />
-                    <PreviewList title={t("sidebar.artists")} list={displayData?.artist} showMore={false} />
-                    <PreviewList title={t("sidebar.playlists")} list={displayData?.playlist} showMore={false} />
+                    <PreviewList title={t("sidebar.top")} list={displayData?.top} showMore={false} stagger={1} />
+                    <PreviewList title={t("sidebar.songs")} list={displayData?.song} showMore={false} stagger={2} />
+                    <PreviewList title={t("sidebar.albums")} list={displayData?.album} showMore={false} stagger={3} />
+                    <PreviewList title={t("sidebar.artists")} list={displayData?.artist} showMore={false} stagger={4} />
+                    <PreviewList title={t("sidebar.playlists")} list={displayData?.playlist} showMore={false} stagger={5} />
                 </>
             )}
 
